@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>Site</title>
+<style>
+table.t1 {
+	border-top: 1px #990000 dotted;
+	border-bottom: 1px #990000 dotted;
+}
+th.t1 {
+	border-left: 1px #990000 dotted;
+	border-right: 1px #990000 dotted;
+}
+td.t1 {
+	border-top: 1px #009900 dotted;
+	border-left: 1px #009900 dotted;
+	border-right: 1px #009900 dotted;
+}
+table.t2 {
+	border-top: 1px #6311C6 dotted;
+	border-bottom: 1px #6311C6 dotted;
+}
+th.t2 {
+	border-left: 1px #6311C6 dotted;
+	border-right: 1px #6311C6 dotted;
+}
+td.t2 {
+	border-top: 1px #01ACBA dotted;
+	border-left: 1px #01ACBA dotted;
+	border-right: 1px #01ACBA dotted;
+}
+</style>
+</head>
+
+<!-- js: code run 848 beta-gun -->
+<body>
+
+<table width="300" class="t1">
+	<tr>
+		<th class="t1">1</th>
+		<th class="t1">2</th>
+		<th class="t1">3</th>
+	</tr>
+	<tr>
+		<td class="t1">Vasya</td>
+		<td class="t1">28.34</td>
+		<td class="t1">-15.48</td>
+	</tr>
+	<tr>
+		<td class="t1">Petya</td>
+		<td class="t1">140.02</td>
+		<td class="t1">29</td>
+	</tr>
+	<tr>
+		<td class="t1">Masha</td>
+		<td class="t1">-2.09</td>
+		<td class="t1">-37.03</td>
+	</tr>
+</table>
+<script type="text/javascript">
+;(function(win, doc){
+    
+    var
+        createElement = doc.createElement,
+        getElementsByTagName = doc.getElementsByTagName,
+        getElementsByClassName = doc.getElementsByClassName,
+        getElementById = doc.getElementById
+        
+    ;    
+    
+    function getElement(name) {
+        var fn;
+        
+        switch((name.match(/^[.#]/)||[])[0]) {
+        case ".": // class
+            fn = 'getElementsByClassName';
+        break;
+        case "#": // id
+            fn = 'getElementById';
+        break;
+        default: // try tag
+            fn = 'getElementsByTagName'; 
+        }
+        
+        return (doc[fn](name.replace(/[.#]/,''))||[])[0]; // first
+    }    
+    
+    function clone(el, attr) {
+        var 
+            k, o = {},
+            cloneEl = el.cloneNode(),
+            _attr = {"id":"id", "className":"className"}
+        ;
+        
+        if (attr) {
+            for (k in attr) {
+                if(_attr[k]) cloneEl[k] = attr[k];
+            }
+        }
+        
+        return cloneEl;
+    }    
+    
+        
+        
+        
+        
+        
+        
+        console.log(clone(getElement(".t1"), {"className":"t2"}) ); 
+        
+        console.log( getElement(".t1") ); 
+
+        //getElementsByTagName( 'body' )[0]
+
+        
+    
+})(window, document)
+</script>
+</body>
+</html>
