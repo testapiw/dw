@@ -59,61 +59,146 @@ td.t2 {
 <script type="text/javascript">
 ;(function(win, doc){
     
-    var
-        createElement = doc.createElement,
-        getElementsByTagName = doc.getElementsByTagName,
-        getElementsByClassName = doc.getElementsByClassName,
-        getElementById = doc.getElementById
-        
-    ;    
+    // lib
+    function xhr(m,u,c,x){
+            with(new(this.XMLHttpRequest||ActiveXObject)("Microsoft.XMLHTTP"))
+            onreadystatechange=function(x){readyState^4||c(x)},open(m,u),send(c)
+    }
     
-    function getElement(name) {
-        var fn;
-        
-        switch((name.match(/^[.#]/)||[])[0]) {
-        case ".": // class
-            fn = 'getElementsByClassName';
-        break;
-        case "#": // id
-            fn = 'getElementById';
-        break;
-        default: // try tag
-            fn = 'getElementsByTagName'; 
-        }
-        
-        return (doc[fn](name.replace(/[.#]/,''))||[])[0]; // first
-    }    
+///    xhr('get', 'http://localhost:8383/TEST/site.html', function(xhr){
+ //       console.log( xhr.currentTarget.response, xhr )
+ //   })
     
-    function clone(el, attr) {
+    //HTMLElement.prototype
+    var element = (function () {
         var 
-            k, o = {},
-            cloneEl = el.cloneNode(),
-            _attr = {"id":"id", "className":"className"}
+            el=[], cache = {},
+            isTag = ["button","div","tr","td"]
         ;
         
-        if (attr) {
-            for (k in attr) {
-                if(_attr[k]) cloneEl[k] = attr[k];
-            }
+
+        
+        var getter = function () {
+                var 
+                    elem, s, p,
+                    fn  = {
+                        '.' : 'getElementsByClassName',
+                        '#' : 'getElementById',
+                        '_' : 'getElementsByTagName'
+                    };
+                    
+                function getelement (child, parent) {
+                    var p = (child.match(/^[.#]/)||['_'])[0];
+                    return ((elem = parent[ fn[p] ]( child.replace(/[.#]/,'') )).length <=1 ) 
+                        ? (elem||[])[0] : elem;
+                }                  
+        
+                return function(selector) {
+                        var elem, s,
+                            parent=doc;
+  
+                        s = selector.split('>').reverse();
+                        
+                        if (s.length>1) {
+                            parent = getelement(s[1], doc);
+                        }
+                        
+                        return getelement(s[0], parent);
+                   } 
+         }();
+        
+        function is (name, isAllow) {
+             return (isAllow.indexOf(name)+1) ? true : false;
         }
         
-        return cloneEl;
-    }    
+        function addAttr (attr) {
+            var
+                k,
+                isAllow = ["onclick","appendChild",
+                       "id","name","title","className","innerHTML"]
+                ;
+            for (k in attr) {
+                    if (isAllow.indexOf(k)+1) {
+                        (typeof element[0][k] !== 'function')
+                            ? element[0][k] = attr[k]
+                            : element[0][k](attr[k]);
+                    }
+            } 
+        
+            return element[0];                
+        }     
+        
+        
+        
+        return {
+       
+            get : function (name, parent) {
+                    var nc =name+ parent;
+                    element[0] = (cache[nc]) 
+                        ? cache[nc] 
+                        : getter(name, parent);
+                    return this;
+            },
+            
+            
+            /*
+             * parent, child: type - string or HTMLElement
+             */
+            insert : function (parent, child) {
+                    
+                    var p, ch = null, _el = el;
+                    
+                    if (child) { 
+                        ch = getter(child); 
+                    }
+                    
+                    p = getter(parent)
+                    if (element[0].length>1) return this;
+                    p.insertBefore(element[0], ch);
+                    return this;
+            },
+            
+            create  : function (tag, attr) {
+                    
+                    if (isTag.indexOf(tag.toLowerCase())+1) {
+                        element[0] = doc.createElement(tag);
+                        addAttr(attr);
+                    }
+                    
+                    return this;
+            },
+            
+            clone   : function (attr) {
+                    
+                    if (element[0].length>1) return this;
+                    element[0] = element[0].cloneNode(true);
+                    addAttr(attr);
+                    return this;
+            }
+            
+        };
+ 
+    })();
+       
+        
     
+      var z = element.create("div", {id:"wrapper"}).insert('body', 'script');
+       
+            z.create('button', 
+                    {  
+                        name:'test3', title:"dfgdf",
+                        appendChild: doc.createTextNode(  'name2'  ),
+                        onclick : function(){
+                                console.log(this);
+                                element.get('table').clone({className:"t2", }).insert('#wrapper')
+                               // table.get('.t2').shuffle([1,3,2]);
+                                
+                        }
+                    })
+                .insert('#wrapper');
         
-        
-        
-        
-        
-        
-        console.log(clone(getElement(".t1"), {"className":"t2"}) ); 
-        
-        console.log( getElement(".t1") ); 
-
-        //getElementsByTagName( 'body' )[0]
-
-        
-    
+       
+	
 })(window, document)
 </script>
 </body>
